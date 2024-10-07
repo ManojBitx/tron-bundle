@@ -1,0 +1,18 @@
+# Composer dependencies
+/vendor/
+
+# IDE specific files
+/.idea/
+/*.iml
+/.vscode/
+/*.swp
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# PHPUnit result cache
+.phpunit.result.cache
+
+# Ignore composer.lock
+/composer.lock

@@ -1,0 +1,6 @@
+services:
+  manojx.tron:
+    class: ManojX\TronBundle\Tron
+    public: false
+
+  ManojX\TronBundle\TronInterface: '@manojx.tron'
