@@ -52,7 +52,7 @@ class Tron implements TronInterface
 
         $this->network = $network;
         $httpConfig = $config['http'] ?? [];
-        $this->node = new Node($httpConfig);
+        $this->node = new Node($httpConfig, $network);
     }
 
     /**

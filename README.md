@@ -90,6 +90,40 @@ class TransactionService
 }
 ```
 
+## USDT & Contract Interaction
+
+You can interact with USDT and other smart contracts on the Tron network.
+
+USDT Contract Address: [TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs](https://shasta.tronscan.org/#/token20/TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs) (Shasta Testnet)
+
+```php
+use ManojX\TronBundle\TronInterface;
+
+class TransactionService
+{
+    private TronInterface $tron;
+
+    public function __construct(TronInterface $tron)
+    {
+        $this->tron = $tron;
+    }
+
+    public function sendUsdt()
+    {
+        $wallet = $this->tron->getWallet('your-private-key');
+
+        $usdt = $wallet->getUsdt();
+        $transaction = $usdt->transfer('to-address', 1);
+
+        $signedTransaction = $wallet->signTransaction($transaction['data']);
+
+        $response = $node->broadcastTransaction($signedTransaction);
+        
+        return $response;
+    }
+}
+```
+
 For additional usage examples, please refer to the `examples` directory.
 
 ## License

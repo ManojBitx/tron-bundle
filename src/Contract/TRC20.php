@@ -3,6 +3,8 @@
 namespace ManojX\TronBundle\Contract;
 
 use ManojX\TronBundle\Exception\TRC20Exception;
+use ManojX\TronBundle\Exception\TronAddressException;
+use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Utils\Str;
 use ManojX\TronBundle\Utils\Trx;
 use ManojX\TronBundle\Wallet\Address\Address;
@@ -96,7 +98,7 @@ class TRC20 extends Base
         }
 
         $addr = Address::base58ToHex($address);
-        $response = $this->trigger('balanceOf', [$addr], $address);
+        $response = $this->trigger('balanceOf', [$addr]);
         $balance = isset($response['balance']) ? $response['balance']->toString() : null;
 
         if (!is_string($balance) || !preg_match('/^[0-9]+$/', $balance)) {
@@ -110,12 +112,28 @@ class TRC20 extends Base
         return $balance;
     }
 
-    public function transfer(string $from, string $to, string $amount): array
+    /**
+     * Transfer TRC20 token to another address
+     *
+     * @param string $to The recipient address
+     * @param string $amount The amount to transfer
+     * @param string|null $from The sender address (optional)
+     * @return array
+     *
+     * @throws TRC20Exception
+     * @throws TronAddressException
+     * @throws TronException
+     */
+    public function transfer(string $to, string $amount, string $from = null): array
     {
         if (!is_numeric($this->feeLimit) || $this->feeLimit <= 0) {
             throw new TRC20Exception('Fee limit is required. Please set feeLimit using setFeeLimit() method.');
         } elseif ($this->feeLimit > self::MaxFeeLimit) {
             throw new TRC20Exception('Fee limit must not be greater than ' . self::MaxFeeLimit . ' TRX.');
+        }
+
+        if (is_null($from)) {
+            $from = $this->getWallet()->getAddress();
         }
 
         $decimals = $this->getDecimals();

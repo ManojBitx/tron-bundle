@@ -3,10 +3,12 @@
 namespace ManojX\TronBundle\Contract;
 
 use ManojX\TronBundle\Exception\TRC20Exception;
+use ManojX\TronBundle\Exception\TronAddressException;
 use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Node\Node;
 use ManojX\TronBundle\Utils\Trx;
 use ManojX\TronBundle\Wallet\Address\Address as TronAddress;
+use ManojX\TronBundle\Wallet\Wallet;
 use Web3\Contracts\Ethabi;
 use Web3\Contracts\Types\Address;
 use Web3\Contracts\Types\Boolean;
@@ -35,6 +37,8 @@ class Base
     private Ethabi $ethAbi;
 
     private Node $node;
+
+    private Wallet $wallet;
 
     const MaxFeeLimit = 500;
 
@@ -100,6 +104,25 @@ class Base
         $this->node = $node;
     }
 
+    public function getWallet(): Wallet
+    {
+        return $this->wallet;
+    }
+
+    /**
+     * Set the wallet to use for contract execution
+     *
+     * @param Wallet $wallet
+     *
+     * @return void
+     * @throws TronAddressException
+     */
+    public function setWallet(Wallet $wallet): void
+    {
+        $this->wallet = $wallet;
+        $this->node = $wallet->getNode();
+    }
+
     /**
      * Trigger a function on the contract
      *
@@ -158,7 +181,7 @@ class Base
         }
 
         return [
-            'success' => $data['result'],
+            'success' => $data['result']['result'],
             'data' => $data['transaction'],
         ];
     }

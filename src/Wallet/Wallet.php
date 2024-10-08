@@ -3,8 +3,10 @@
 namespace ManojX\TronBundle\Wallet;
 
 use Elliptic\EC;
+use ManojX\TronBundle\Contract\Token\USDT;
 use ManojX\TronBundle\Contract\TRC20;
 use ManojX\TronBundle\Exception\TronAddressException;
+use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Node\NodeInterface;
 use ManojX\TronBundle\Wallet\Address\Address;
 use ManojX\TronBundle\Wallet\Transaction\Transaction;
@@ -61,11 +63,32 @@ class Wallet implements WalletInterface
         return $this->node;
     }
 
+    /**
+     * @throws TronAddressException
+     */
     public function getTrc20(string $contractAddress): TRC20
     {
         $trc20 = new TRC20($contractAddress);
-        $trc20->setNode($this->node);
+        $trc20->setWallet($this);
         return $trc20;
+    }
+
+    /**
+     * Get the USDT instance
+     *
+     * @param string|null $contractAddress
+     * @param array|null $abi
+     *
+     * @return USDT
+     *
+     * @throws TronException
+     */
+    public function getUsdt(?string $contractAddress = null, ?array $abi = null): USDT
+    {
+        $network = $this->getNode()->getNetwork();
+        $usdt = new USDT($network, $contractAddress, $abi);
+        $usdt->setWallet($this);
+        return $usdt;
     }
 
     /**

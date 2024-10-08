@@ -24,7 +24,7 @@ class TRC20
 
         $to = 'to-address';
         $tokenAmount = 1;
-        $transaction = $contract->transfer($wallet->getAddress(), $to, $tokenAmount);
+        $transaction = $contract->transfer($to, $tokenAmount);
 
         $signedTransaction = $wallet->signTransaction($transaction['data']);
 
@@ -33,7 +33,24 @@ class TRC20
         print_r($broadcast);
         echo '</pre>';
         die;
+    }
 
+    public function transferUsdt()
+    {
+        $node = $this->tron->getNode();
+
+        $wallet = $this->tron->getWallet('your-private-key');
+
+        $usdt = $wallet->getUsdt();
+        $transaction = $usdt->transfer('to-address', 1);
+
+        $signedTransaction = $wallet->signTransaction($transaction['data']);
+
+        $broadcast = $node->broadcastTransaction($signedTransaction);
+        echo '<pre>';
+        print_r($broadcast);
+        echo '</pre>';
+        die;
     }
 
 }

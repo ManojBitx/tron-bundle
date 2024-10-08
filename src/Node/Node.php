@@ -7,17 +7,22 @@ use ManojX\TronBundle\Provider\HttpProvider;
 
 class Node extends Base implements NodeInterface
 {
+    private string $network;
+
     private HttpProvider $provider;
 
     /**
      * @throws TronException
      */
-    public function __construct(array $httpConfig = [])
+    public function __construct(array $httpConfig, string $network)
     {
-        if (!isset($httpConfig['host'])) {
-            $httpConfig['host'] = 'https://api.shasta.trongrid.io';
-        }
+        $this->network = $network;
         $this->provider = new HttpProvider($httpConfig['host']);
+    }
+
+    public function getNetwork(): string
+    {
+        return $this->network;
     }
 
     public function getCurrentBlock(): array
