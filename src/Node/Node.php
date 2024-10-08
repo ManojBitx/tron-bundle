@@ -17,7 +17,7 @@ class Node extends Base implements NodeInterface
     public function __construct(array $httpConfig, string $network)
     {
         $this->network = $network;
-        $this->provider = new HttpProvider($httpConfig['host']);
+        $this->provider = new HttpProvider($httpConfig['host'], $httpConfig['api_key']);
     }
 
     public function getNetwork(): string

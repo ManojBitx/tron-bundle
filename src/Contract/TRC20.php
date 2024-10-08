@@ -85,7 +85,7 @@ class TRC20 extends Base
         }
 
         if ($scaled) {
-            return Trx::fromSun($this->totalSupply, $this->getDecimals());
+            return Trx::fromSun((int)$this->totalSupply, $this->getDecimals());
         }
 
         return $this->totalSupply;
