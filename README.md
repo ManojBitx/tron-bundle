@@ -26,7 +26,21 @@ You can configure the Tron node endpoint in your Symfony configuration:
 ```yaml
 # config/packages/tron.yaml
 tron:
-    host: 'https://api.shasta.trongrid.io' # Testnet host (Shasta)
+    default_network: shasta
+    networks:
+        mainnet:
+            http:
+                host: 'https://api.trongrid.io'
+                api_key: 'your_api_key'
+        shasta:
+            http:
+                host: 'https://api.shasta.trongrid.io'
+                api_key: 'your_api_key'
+
+        nile:
+            http:
+                host: 'https://nile.trongrid.io'
+                api_key: 'your_api_key'
 ```
 
 ## Usage
