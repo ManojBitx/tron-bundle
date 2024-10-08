@@ -7,17 +7,22 @@ use ManojX\TronBundle\Provider\HttpProvider;
 
 class Node extends Base implements NodeInterface
 {
+    private string $network;
+
     private HttpProvider $provider;
 
     /**
      * @throws TronException
      */
-    public function __construct(array $httpConfig = [])
+    public function __construct(array $httpConfig, string $network)
     {
-        if (!isset($httpConfig['host'])) {
-            $httpConfig['host'] = 'https://api.shasta.trongrid.io';
-        }
-        $this->provider = new HttpProvider($httpConfig['host']);
+        $this->network = $network;
+        $this->provider = new HttpProvider($httpConfig['host'], $httpConfig['api_key']);
+    }
+
+    public function getNetwork(): string
+    {
+        return $this->network;
     }
 
     public function getCurrentBlock(): array
@@ -34,6 +39,18 @@ class Node extends Base implements NodeInterface
     public function createTransaction(array $transaction): array
     {
         $response = $this->provider->request('/wallet/createtransaction', $transaction, 'POST');
+        return $this->parse($response);
+    }
+
+    public function triggerConstantContract(array $contract): array
+    {
+        $response = $this->provider->request('/wallet/triggerconstantcontract', $contract, 'POST');
+        return $this->parse($response);
+    }
+
+    public function triggerSmartContract(array $contract): array
+    {
+        $response = $this->provider->request('/wallet/triggersmartcontract', $contract, 'POST');
         return $this->parse($response);
     }
 }

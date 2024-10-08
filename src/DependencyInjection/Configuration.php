@@ -13,10 +13,20 @@ class Configuration implements ConfigurationInterface
 
         $rootNode = $treeBuilder->getRootNode();
         $rootNode->children()
+            ->scalarNode('default_network')
+            ->defaultValue('mainnet')
+            ->end()
+            ->arrayNode('networks')
+            ->useAttributeAsKey('name')
+            ->arrayPrototype()
+            ->children()
             ->arrayNode('http')
             ->children()
-            ->scalarNode('host')->end()
-            ->scalarNode('api_key')->end()
+            ->scalarNode('host')->isRequired()->end()
+            ->scalarNode('api_key')->defaultNull()->end()
+            ->end()
+            ->end()
+            ->end()
             ->end()
             ->end()
             ->end();

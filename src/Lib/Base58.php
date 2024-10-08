@@ -5,18 +5,25 @@ namespace ManojX\TronBundle\Lib;
 class Base58
 {
 
-    public static function encode(string $hex): string
+    /**
+     * Convert hexadecimal to Base58
+     *
+     * @param string $base58
+     *
+     * @return string
+     */
+    public static function encode(string $base58): string
     {
-        $hexBin = hex2bin($hex);
-        $hash = Hash::SHA256(Hash::SHA256($hexBin));
+        $base58Bin = hex2bin($base58);
+        $hash = Hash::SHA256(Hash::SHA256($base58Bin));
         $checksum = substr($hash, 0, 4);
-        $checksum = $hexBin . $checksum;
+        $checksum = $base58Bin . $checksum;
 
         return Crypto::toString(Crypto::bin2bc($checksum));
     }
 
     /**
-     * Convert a hexadecimal string to Base58
+     * Convert Base58 to hexadecimal
      *
      * @param string $hex
      * @param int $removeTrailingBytes

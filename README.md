@@ -26,7 +26,21 @@ You can configure the Tron node endpoint in your Symfony configuration:
 ```yaml
 # config/packages/tron.yaml
 tron:
-    host: 'https://api.shasta.trongrid.io' # Testnet host (Shasta)
+    default_network: shasta
+    networks:
+        mainnet:
+            http:
+                host: 'https://api.trongrid.io'
+                api_key: 'your_api_key'
+        shasta:
+            http:
+                host: 'https://api.shasta.trongrid.io'
+                api_key: 'your_api_key'
+
+        nile:
+            http:
+                host: 'https://nile.trongrid.io'
+                api_key: 'your_api_key'
 ```
 
 ## Usage
@@ -85,6 +99,40 @@ class TransactionService
         $node = $this->tron->getNode();
         $response = $node->broadcastTransaction($signedTransaction);
 
+        return $response;
+    }
+}
+```
+
+## USDT & Contract Interaction
+
+You can interact with USDT and other smart contracts on the Tron network.
+
+USDT Contract Address: [TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs](https://shasta.tronscan.org/#/token20/TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs) (Shasta Testnet)
+
+```php
+use ManojX\TronBundle\TronInterface;
+
+class TransactionService
+{
+    private TronInterface $tron;
+
+    public function __construct(TronInterface $tron)
+    {
+        $this->tron = $tron;
+    }
+
+    public function sendUsdt()
+    {
+        $wallet = $this->tron->getWallet('your-private-key');
+
+        $usdt = $wallet->getUsdt();
+        $transaction = $usdt->transfer('to-address', 1);
+
+        $signedTransaction = $wallet->signTransaction($transaction['data']);
+
+        $response = $node->broadcastTransaction($signedTransaction);
+        
         return $response;
     }
 }

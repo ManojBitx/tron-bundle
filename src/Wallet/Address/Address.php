@@ -121,13 +121,13 @@ class Address implements AddressInterface
      * @return string
      *
      */
-    public static function base58ToHex(string $address): string
+    public static function base58ToHex(string $address, int $removeTrailingBytes = 4): string
     {
         if (strlen($address) == 42 && mb_strpos($address, self::ADDRESS_PREFIX) == 0) {
             return $address;
         }
 
-        return Base58::decode($address);
+        return Base58::decode($address, $removeTrailingBytes);
     }
 
     /**

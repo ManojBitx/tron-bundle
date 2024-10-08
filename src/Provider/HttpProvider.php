@@ -24,13 +24,17 @@ class HttpProvider implements HttpProviderInterface
     /**
      * @throws TronException
      */
-    public function __construct(string $host)
+    public function __construct(string $host, ?string $apiKey = null)
     {
         $options = [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
         ];
+
+        if ($apiKey) {
+            $options['headers']['TRON-PRO-API-KEY'] = $apiKey;
+        }
 
         if ($this->authBasic && $this->authBearer) {
             throw new TronException('You can only use one of the authBasic or authBearer options');

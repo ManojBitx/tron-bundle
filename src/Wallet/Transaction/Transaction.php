@@ -4,7 +4,7 @@ namespace ManojX\TronBundle\Wallet\Transaction;
 
 use ManojX\TronBundle\Exception\TronAddressException;
 use ManojX\TronBundle\Exception\TronTransactionException;
-use ManojX\TronBundle\Utils\Tron;
+use ManojX\TronBundle\Utils\Trx;
 use ManojX\TronBundle\Wallet\Address\Address;
 use ManojX\TronBundle\Wallet\Wallet;
 
@@ -51,7 +51,7 @@ class Transaction
         $payload = [
             'to_address' => $toHex,
             'owner_address' => $fromHex,
-            'amount' => Tron::toSun($this->getAmount()),
+            'amount' => Trx::toSun($this->getAmount()),
         ];
 
         $node = $this->wallet->getNode();
@@ -72,14 +72,8 @@ class Transaction
      */
     public function createAndSign(): array
     {
-        $transaction = $this->create();
-
-        $signed = $transaction['data'];
-
-        $signature = $this->wallet->sign($signed['txID']);
-        $signed['signature'] = $signature;
-
-        return $signed;
+        $response = $this->create();
+        return $this->wallet->signTransaction($response['data']);
     }
 
     public function getTo(): ?string
