@@ -26,4 +26,17 @@ class Str
     {
         return substr($str, 0, 2) === '0x';
     }
+
+    /**
+     * Clean the given string from any non-alphanumeric characters
+     *
+     * @param string $str
+     * @param bool $removeAllSpace
+     * @return string
+     */
+    public static function sanitize(string $str, bool $removeAllSpace = false): string
+    {
+        $regex = $removeAllSpace ? '/[^\w.-]/' : '/[^\w\s.-]/';
+        return preg_replace($regex, '', trim($str));
+    }
 }

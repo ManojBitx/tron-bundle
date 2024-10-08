@@ -36,4 +36,16 @@ class Node extends Base implements NodeInterface
         $response = $this->provider->request('/wallet/createtransaction', $transaction, 'POST');
         return $this->parse($response);
     }
+
+    public function triggerConstantContract(array $contract): array
+    {
+        $response = $this->provider->request('/wallet/triggerconstantcontract', $contract, 'POST');
+        return $this->parse($response);
+    }
+
+    public function triggerSmartContract(array $contract): array
+    {
+        $response = $this->provider->request('/wallet/triggersmartcontract', $contract, 'POST');
+        return $this->parse($response);
+    }
 }

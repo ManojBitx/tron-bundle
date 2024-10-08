@@ -25,31 +25,46 @@ class Base
     {
         $errorMessage = [
             'error' => false,
-            'type' => null,
-            'message' => null
+            'message' => null,
+            'rawMessage' => null,
         ];
 
         if (isset($response['Error'])) {
-            $parts = explode(':', $response['Error'], 2);
-            if (count($parts) === 2) {
-                return [
-                    'error' => true,
-                    'type' => trim($parts[0]),
-                    'message' => trim($parts[1])
-                ];
-            }
-        } else if (isset($response['code']) && $response['code'] === 'SIGERROR') {
-            $message = hex2bin($response['message']);
-            $parts = explode(':', $message, 3);
-            return [
-                'error' => true,
-                'type' => trim($parts[1]),
-                'message' => trim($parts[2])
-            ];
+            $parsedMessage = $this->hexMessageParser($response['message']);
+            return array_merge(['error' => true], $parsedMessage);
+        }
 
+        if (isset($response['code']) && strpos($response['code'], 'ERROR') !== false) {
+            $parsedMessage = $this->hexMessageParser($response['message']);
+            return array_merge(['error' => true], $parsedMessage);
+        }
+
+        if (isset($response['result']['code']) && strpos($response['result']['code'], 'ERROR') !== false) {
+            $parsedMessage = $this->hexMessageParser($response['result']['message']);
+            return array_merge(['error' => true], $parsedMessage);
+        }
+
+        if (isset($response['result']['message'])) {
+            $parsedMessage = $this->hexMessageParser($response['result']['message']);
+            return array_merge(['error' => true], $parsedMessage);
         }
 
         return $errorMessage;
 
     }
+
+    private function hexMessageParser($message): array
+    {
+        $message = hex2bin($message);
+        $parts = explode(':', $message);
+
+        $messagePart = array_pop($parts);
+        $rawPart = implode(':', $parts);
+
+        return [
+            'message' => trim($messagePart),
+            'rawMessage' => trim($rawPart),
+        ];
+    }
+
 }

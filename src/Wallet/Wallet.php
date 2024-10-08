@@ -3,6 +3,7 @@
 namespace ManojX\TronBundle\Wallet;
 
 use Elliptic\EC;
+use ManojX\TronBundle\Contract\TRC20;
 use ManojX\TronBundle\Exception\TronAddressException;
 use ManojX\TronBundle\Node\NodeInterface;
 use ManojX\TronBundle\Wallet\Address\Address;
@@ -60,6 +61,13 @@ class Wallet implements WalletInterface
         return $this->node;
     }
 
+    public function getTrc20(string $contractAddress): TRC20
+    {
+        $trc20 = new TRC20($contractAddress);
+        $trc20->setNode($this->node);
+        return $trc20;
+    }
+
     /**
      * Initialize a new transaction
      */
@@ -76,6 +84,13 @@ class Wallet implements WalletInterface
         $s = $sign->s->toString('hex');
 
         return $r . $s . bin2hex(chr($sign->recoveryParam)); // Combine them in your desired format
+    }
+
+    public function signTransaction(array $transaction): array
+    {
+        $signature = $this->sign($transaction['txID']);
+        $transaction['signature'] = $signature;
+        return $transaction;
     }
 
     /**
