@@ -18,7 +18,8 @@ class TronExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $definition = $container->getDefinition('manojx.tron');
-        $definition->setArgument('$httpConfig', $config['http']);
+        $definition->setArgument('$defaultNetwork', $config['default_network']);
+        $definition->setArgument('$networks', $config['networks']);
 
     }
 }

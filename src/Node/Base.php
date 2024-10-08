@@ -2,6 +2,8 @@
 
 namespace ManojX\TronBundle\Node;
 
+use ManojX\TronBundle\Utils\Str;
+
 class Base
 {
     protected function parse(array $response): array
@@ -30,22 +32,22 @@ class Base
         ];
 
         if (isset($response['Error'])) {
-            $parsedMessage = $this->hexMessageParser($response['message']);
+            $parsedMessage = $this->messageParser($response['Error']);
             return array_merge(['error' => true], $parsedMessage);
         }
 
         if (isset($response['code']) && strpos($response['code'], 'ERROR') !== false) {
-            $parsedMessage = $this->hexMessageParser($response['message']);
+            $parsedMessage = $this->messageParser($response['message']);
             return array_merge(['error' => true], $parsedMessage);
         }
 
         if (isset($response['result']['code']) && strpos($response['result']['code'], 'ERROR') !== false) {
-            $parsedMessage = $this->hexMessageParser($response['result']['message']);
+            $parsedMessage = $this->messageParser($response['result']['message']);
             return array_merge(['error' => true], $parsedMessage);
         }
 
         if (isset($response['result']['message'])) {
-            $parsedMessage = $this->hexMessageParser($response['result']['message']);
+            $parsedMessage = $this->messageParser($response['result']['message']);
             return array_merge(['error' => true], $parsedMessage);
         }
 
@@ -53,9 +55,11 @@ class Base
 
     }
 
-    private function hexMessageParser($message): array
+    private function messageParser(string $message): array
     {
-        $message = hex2bin($message);
+        if (Str::isHex($message)) {
+            $message = hex2bin($message);
+        }
         $parts = explode(':', $message);
 
         $messagePart = array_pop($parts);
