@@ -204,8 +204,7 @@ class Transaction implements TransactionInterface
             throw new TronTransactionException('Invalid transaction hash.');
         }
 
-        $node = $this->node->setNodeToUse(Node::EXPLORER);
-        $response = $node->getTransactionInfoByHash($hash);
+        $response = $this->node->getTransactionInfoByHash($hash);
 
         if (!$response['success']) {
             throw new TronTransactionException($response['error']['message']);

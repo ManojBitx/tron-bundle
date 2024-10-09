@@ -117,8 +117,12 @@ class Node extends Base implements NodeInterface
         return $this->parse($response);
     }
 
+    /**
+     * @throws TronException
+     */
     public function getTransactionInfoByHash(string $hash): array
     {
+        $this->setNodeToUse(self::EXPLORER);
         $response = $this->provider->request('/api/transaction-info?hash=' . $hash);
         if (count($response) <= 0) {
             $response['Error'] = 'Invalid.Hash: Transaction not found or Invalid transaction hash.';
