@@ -37,7 +37,6 @@ class TRC20
 
     public function transferUsdt()
     {
-        $node = $this->tron->getNode();
 
         $wallet = $this->tron->getWallet('your-private-key');
 
@@ -46,7 +45,7 @@ class TRC20
 
         $signedTransaction = $wallet->signTransaction($transaction['data']);
 
-        $broadcast = $node->broadcastTransaction($signedTransaction);
+        $broadcast = $this->tron->sendRawTransaction($signedTransaction);
         echo '<pre>';
         print_r($broadcast);
         echo '</pre>';

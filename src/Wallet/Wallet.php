@@ -18,31 +18,42 @@ class Wallet implements WalletInterface
 
     private ?NodeInterface $node = null;
 
-    private ?Address $account = null;
+    private Address $account;
 
     /**
      * @throws TronAddressException
      */
-    public function __construct(?string $privateKey = null, ?NodeInterface $node = null)
+    public function __construct(string $privateKey, ?NodeInterface $node = null)
     {
         $this->ec = new EC('secp256k1');
-        if ($privateKey) {
-            $publicKey = $this->ec->keyFromPrivate($privateKey)->getPublic('hex');
-            $this->account = new Address([
-                'public_key' => $publicKey,
-                'private_key' => $privateKey,
-            ]);
-        }
+
+        $publicKey = $this->ec->keyFromPrivate($privateKey)->getPublic('hex');
+        $this->account = new Address([
+            'public_key' => $publicKey,
+            'private_key' => $privateKey,
+        ]);
 
         $this->node = $node;
     }
 
+    /**
+     * Get the account address.
+     *
+     * @return Address The Address instance representing the wallet's account.
+     */
+    public function getAccount(): Address
+    {
+        return $this->account;
+    }
+
+    /**
+     * Retrieve the wallet address.
+     *
+     * @param bool $hex Whether to return the address in hexadecimal format.
+     * @return string The wallet address.
+     */
     public function getAddress(bool $hex = false): string
     {
-        if (!$this->account) {
-            throw new TronAddressException('Please provide a private key to get the address.');
-        }
-
         if ($hex) {
             return $this->account->getAddressHex();
         }
@@ -51,9 +62,10 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * Get the node instance
-     * @return NodeInterface
-     * @throws TronAddressException
+     * Get the node instance used for blockchain interactions.
+     *
+     * @return NodeInterface The Node instance.
+     * @throws TronAddressException If the node is not provided.
      */
     public function getNode(): NodeInterface
     {
@@ -64,7 +76,11 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * @throws TronAddressException
+     * Create a TRC20 token instance.
+     *
+     * @param string $contractAddress The TRC20 token contract address.
+     * @return TRC20 The TRC20 token instance.
+     * @throws TronAddressException If the contract address is invalid.
      */
     public function getTrc20(string $contractAddress): TRC20
     {
@@ -74,14 +90,14 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * Get the USDT instance
+     * Create a USDT token instance.
      *
-     * @param string|null $contractAddress
-     * @param array|null $abi
+     * @param string|null $contractAddress Optional contract address for USDT.
+     * @param array|null $abi Optional ABI definition for the contract.
      *
-     * @return USDT
+     * @return USDT The USDT token instance.
      *
-     * @throws TronException
+     * @throws TronException If there is an error while creating the token instance.
      */
     public function getUsdt(?string $contractAddress = null, ?array $abi = null): USDT
     {
@@ -92,13 +108,21 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * Initialize a new transaction
+     * Initialize a new transaction.
+     *
+     * @return Transaction A new Transaction instance.
      */
-    public function initTransaction(): Transaction
+    public function newTransaction(): Transaction
     {
         return new Transaction($this);
     }
 
+    /**
+     * Sign a message using the wallet's private key.
+     *
+     * @param string $message The message to be signed.
+     * @return string The signature.
+     */
     public function sign(string $message): string
     {
         $sign = $this->ec->sign($message, $this->account->getPrivateKey(), ['canonical' => false]);
@@ -109,6 +133,12 @@ class Wallet implements WalletInterface
         return $r . $s . bin2hex(chr($sign->recoveryParam)); // Combine them in your desired format
     }
 
+    /**
+     * Sign a transaction using the wallet's private key.
+     *
+     * @param array $transaction The transaction data to be signed.
+     * @return array The signed transaction.
+     */
     public function signTransaction(array $transaction): array
     {
         $signature = $this->sign($transaction['txID']);
@@ -117,11 +147,10 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * Create a new address
+     * Create a new wallet address.
      *
-     * @return Address
-     *
-     * @throws TronAddressException
+     * @return Address A new Address instance.
+     * @throws TronAddressException If address creation fails.
      */
     public function createNewAddress(): Address
     {
@@ -133,6 +162,47 @@ class Wallet implements WalletInterface
             'public_key' => $publicKey,
             'private_key' => $privateKey,
         ]);
+    }
+
+    /**
+     * Update the permissions of the wallet owner address.
+     *
+     * @param string $authorizedAddress The address to be authorized.
+     * @param string $operations The type of operations to allow.
+     * @return array The response from the blockchain after broadcasting the transaction.
+     * @throws TronAddressException If the update fails.
+     */
+    public function updatePermission(string $authorizedAddress, string $operations = Operations::FULL): array
+    {
+        $node = $this->getNode();
+
+        $ownerAddress = $this->getAddress();
+        $response = $node->accountPermissionUpdate($ownerAddress, $authorizedAddress, $operations);
+        if ($response['success']) {
+            $signedTransaction = $this->signTransaction($response['data']);
+            return $this->getNode()->broadcastTransaction($signedTransaction);
+        }
+        throw new TronAddressException('Failed to update permission due to: ' . $response['message']);
+    }
+
+
+    /**
+     * Reset permissions of the owner address.
+     *
+     * @param string $ownerAddress The owner address whose permissions are to be reset.
+     * @return array The response from the blockchain after broadcasting the transaction.
+     * @throws TronAddressException If the reset fails.
+     */
+    public function resetPermissions(string $ownerAddress): array
+    {
+        $node = $this->getNode();
+
+        $response = $node->accountPermissionUpdate($ownerAddress, $ownerAddress, Operations::FULL);
+        if ($response['success']) {
+            $signedTransaction = $this->signTransaction($response['data']);
+            return $this->getNode()->broadcastTransaction($signedTransaction);
+        }
+        throw new TronAddressException('Failed to update permission due to: ' . $response['message']);
     }
 
 }

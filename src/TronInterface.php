@@ -38,4 +38,10 @@ interface TronInterface
      * @return Wallet
      */
     public function getWallet(?string $privateKey = null): Wallet;
+
+    /**
+     * @param array $signedTransaction
+     * @return array
+     */
+    public function sendRawTransaction(array $signedTransaction): array;
 }

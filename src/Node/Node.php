@@ -4,6 +4,7 @@ namespace ManojX\TronBundle\Node;
 
 use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Provider\HttpProvider;
+use ManojX\TronBundle\Wallet\Address\Address;
 
 class Node extends Base implements NodeInterface
 {
@@ -51,6 +52,41 @@ class Node extends Base implements NodeInterface
     public function triggerSmartContract(array $contract): array
     {
         $response = $this->provider->request('/wallet/triggersmartcontract', $contract, 'POST');
+        return $this->parse($response);
+    }
+
+    public function accountPermissionUpdate(string $ownerAddress, string $authorizedAddress, string $operations): array
+    {
+        $payload = [
+            "owner_address" => $ownerAddress,
+            "actives" => [
+                [
+                    "type" => 2,
+                    "permission_name" => "active",
+                    "threshold" => 1,
+                    "operations" => $operations,
+                    "keys" => [
+                        [
+                            "address" => $authorizedAddress,
+                            "weight" => 1
+                        ]
+                    ]
+                ]
+            ],
+            "owner" => [
+                "type" => 0,
+                "permission_name" => "owner",
+                "threshold" => 1,
+                "keys" => [
+                    [
+                        "address" => $authorizedAddress,
+                        "weight" => 1
+                    ]
+                ]
+            ],
+            "visible" => true
+        ];
+        $response = $this->provider->request('/wallet/accountpermissionupdate', $payload, 'POST');
         return $this->parse($response);
     }
 }
