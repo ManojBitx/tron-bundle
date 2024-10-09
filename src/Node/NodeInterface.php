@@ -52,4 +52,27 @@ interface NodeInterface
      * @return array An array containing the response from the permission update operation.
      */
     public function accountPermissionUpdate(string $ownerAddress, string $authorizedAddress, string $operations): array;
+
+    /**
+     * Retrieve transaction details by transaction hash.
+     *
+     * This method fetches the details of a transaction from the blockchain
+     * using the provided transaction hash from the explorer API.
+     *
+     * @param string $hash The transaction Hash of the transaction to retrieve.
+     * @return array An array containing the details of the transaction.
+     */
+    public function getTransactionInfoByHash(string $hash): array;
+
+    /**
+     * Retrieve transaction details by transaction ID.
+     *
+     * This method fetches the details of a transaction from the blockchain
+     * using the provided transaction ID.
+     *
+     * @param string $txID The transaction ID of the transaction to retrieve.
+     * @return array An array containing the details of the transaction.
+     */
+    public function getTransactionById(string $txID): array;
+
 }

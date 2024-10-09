@@ -16,10 +16,10 @@ composer require manojx/tron-bundle
 ```
 
 ## Requirements
-- PHP ^7.4 || ^8.0
-- Symfony ^5.4 || ^6.1 || ^7.0
-- simplito/elliptic-php ^1.0
-- kornrunner/keccak ^1.1
+- PHP `^7.4 || ^8.0`
+- Symfony `^5.4 || ^6.1 || ^7.0`
+- simplito/elliptic-php `^1.0`
+- kornrunner/keccak `^1.1`
 
 ## Configuration
 You can configure the Tron node endpoint in your Symfony configuration:
@@ -29,18 +29,28 @@ tron:
     default_network: shasta
     networks:
         mainnet:
-            http:
+            fullNode:
                 host: 'https://api.trongrid.io'
-                api_key: 'your_api_key'
+                api_key: 'api-key'
+            solidityNode:
+                host: 'https://api.trongrid.io'
+                api_key: 'api-key'
+            explorer:
+                host: 'https://tronscan.org'
+                api_key: 'api-key'
         shasta:
-            http:
+            fullNode:
                 host: 'https://api.shasta.trongrid.io'
-                api_key: 'your_api_key'
+                api_key: 'api-key'
+            explorer:
+                host: 'https://shastapi.tronscan.org'
 
         nile:
-            http:
-                host: 'https://nile.trongrid.io'
-                api_key: 'your_api_key'
+            fullNode:
+                host: 'https://api.nileex.io'
+                api_key: 'api-key'
+            explorer:
+                host: 'https://nile.tronscan.org'
 ```
 
 ## Usage

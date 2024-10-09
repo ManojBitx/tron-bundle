@@ -4,10 +4,19 @@ namespace ManojX\TronBundle\Node;
 
 use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Provider\HttpProvider;
-use ManojX\TronBundle\Wallet\Address\Address;
 
 class Node extends Base implements NodeInterface
 {
+    const FULL_NODE = 'fullNode';
+
+    const SOLIDITY_NODE = 'solidityNode';
+
+    const EXPLORER = 'explorer';
+
+    private string $nodeToUse = self::FULL_NODE;
+
+    private array $config;
+
     private string $network;
 
     private HttpProvider $provider;
@@ -15,10 +24,28 @@ class Node extends Base implements NodeInterface
     /**
      * @throws TronException
      */
-    public function __construct(array $httpConfig, string $network)
+    public function __construct(array $config, string $network)
     {
+        $this->config = $config;
         $this->network = $network;
-        $this->provider = new HttpProvider($httpConfig['host'], $httpConfig['api_key']);
+        $this->setNodeToUse($this->nodeToUse);
+    }
+
+    public function setNodeToUse(string $nodeToUse): self
+    {
+        if (!in_array($nodeToUse, [self::FULL_NODE, self::SOLIDITY_NODE, self::EXPLORER])) {
+            throw new TronException('Invalid node type provided.');
+        }
+
+        if (!in_array($nodeToUse, array_keys($this->config))) {
+            throw new TronException('Node not found in the configuration. Please check the configuration file.');
+        }
+
+        $this->nodeToUse = $nodeToUse;
+
+        $config = $this->config[$this->nodeToUse];
+        $this->provider = new HttpProvider($config['host'], $config['api_key']);
+        return $this;
     }
 
     public function getNetwork(): string
@@ -87,6 +114,31 @@ class Node extends Base implements NodeInterface
             "visible" => true
         ];
         $response = $this->provider->request('/wallet/accountpermissionupdate', $payload, 'POST');
+        return $this->parse($response);
+    }
+
+    /**
+     * @throws TronException
+     */
+    public function getTransactionInfoByHash(string $hash): array
+    {
+        $this->setNodeToUse(self::EXPLORER);
+        $response = $this->provider->request('/api/transaction-info?hash=' . $hash);
+        if (count($response) <= 0) {
+            $response['Error'] = 'Invalid.Hash: Transaction not found or Invalid transaction hash.';
+        }
+        return $this->parse($response);
+    }
+
+    public function getTransactionById(string $txID): array
+    {
+        $response = $this->provider->request('/wallet/gettransactionbyid', [
+            "value" => $txID,
+            "visible" => true
+        ], 'POST');
+        if (count($response) <= 0) {
+            $response['Error'] = 'Invalid.Hash: Transaction not found or Invalid transaction hash.';
+        }
         return $this->parse($response);
     }
 }
