@@ -15,18 +15,16 @@ class Transaction
 
     public function transferTrx()
     {
-        $node = $this->tron->getNode();
-
         // Private key of the wallet that will send the TRX
         $privateKey = 'your-private-key';
         $wallet = $this->tron->getWallet($privateKey);
 
-        $transaction = $wallet->initTransaction();
+        $transaction = $wallet->newTransaction();
         $transaction->setTo('tron-address-to-send');
         $transaction->setAmount(1);
         $signedTransaction = $transaction->createAndSign();
 
-        $broadcastTransaction = $node->broadcastTransaction($signedTransaction);
+        $broadcastTransaction = $this->tron->sendRawTransaction($signedTransaction);
 
         echo '<pre>';
         print_r($signedTransaction);
