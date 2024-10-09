@@ -5,39 +5,51 @@ namespace ManojX\TronBundle\Node;
 interface NodeInterface
 {
     /**
-     * @return array
+     * Retrieve the current block information.
+     *
+     * @return array An array containing details about the current block.
      */
     public function getCurrentBlock(): array;
 
     /**
-     * @param array $signedTransaction
-     * @return array
+     * Broadcast a signed transaction to the network.
+     *
+     * @param array $signedTransaction The signed transaction data to be broadcasted.
+     * @return array An array containing the response from the network.
      */
     public function broadcastTransaction(array $signedTransaction): array;
 
     /**
-     * @param array $transaction
-     * @return array
+     * Create a transaction with the given parameters.
+     *
+     * @param array $transaction The transaction data to be created.
+     * @return array An array containing the response from the node after creating the transaction.
      */
     public function createTransaction(array $transaction): array;
 
     /**
-     * @param array $contract
-     * @return array
+     * Trigger a constant smart contract function.
+     *
+     * @param array $contract The contract details for the constant function call.
+     * @return array An array containing the response from the contract execution.
      */
     public function triggerConstantContract(array $contract): array;
 
     /**
-     * @param array $contract
-     * @return array
+     * Trigger a smart contract function.
+     *
+     * @param array $contract The contract details for the function call.
+     * @return array An array containing the response from the contract execution.
      */
     public function triggerSmartContract(array $contract): array;
 
     /**
-     * @param string $ownerAddress
-     * @param string $authorizedAddress
-     * @param string $operations
-     * @return array
+     * Update the account permissions for the given owner address.
+     *
+     * @param string $ownerAddress The address of the owner whose permissions are to be updated.
+     * @param string $authorizedAddress The address to be authorized.
+     * @param string $operations The type of operations to allow for the authorized address.
+     * @return array An array containing the response from the permission update operation.
      */
     public function accountPermissionUpdate(string $ownerAddress, string $authorizedAddress, string $operations): array;
 }
