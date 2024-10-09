@@ -6,6 +6,7 @@ use ManojX\TronBundle\Exception\TronAddressException;
 use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Node\Node;
 use ManojX\TronBundle\Node\NodeInterface;
+use ManojX\TronBundle\Wallet\Transaction\Transaction;
 use ManojX\TronBundle\Wallet\Wallet;
 
 class Tron implements TronInterface
@@ -65,8 +66,7 @@ class Tron implements TronInterface
         }
 
         $this->network = $network;
-        $httpConfig = $config['http'] ?? [];
-        $this->node = new Node($httpConfig, $network);
+        $this->node = new Node($config, $network);
     }
 
     /**
@@ -89,6 +89,18 @@ class Tron implements TronInterface
     public function getWallet(string $privateKey = null): Wallet
     {
         return new Wallet($privateKey, $this->node);
+    }
+
+    /**
+     * Create a new Transaction instance with the current Node connection.
+     *
+     * @return Transaction A new Transaction instance with Node connection.
+     */
+    public function transaction(): Transaction
+    {
+        $transaction = new Transaction();
+        $transaction->setNode($this->node);
+        return $transaction;
     }
 
     /**

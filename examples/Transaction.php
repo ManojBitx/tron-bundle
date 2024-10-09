@@ -19,9 +19,9 @@ class Transaction
         $privateKey = 'your-private-key';
         $wallet = $this->tron->getWallet($privateKey);
 
-        $transaction = $wallet->newTransaction();
-        $transaction->setTo('tron-address-to-send');
-        $transaction->setAmount(1);
+        $transaction = $wallet->transaction()
+            ->setTo('tron-address-to-send')
+            ->setAmount(1);
         $signedTransaction = $transaction->createAndSign();
 
         $broadcastTransaction = $this->tron->sendRawTransaction($signedTransaction);

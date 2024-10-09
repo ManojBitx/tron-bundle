@@ -66,8 +66,9 @@ class Base
         $rawPart = implode(':', $parts);
 
         return [
+            'type' => $rawPart,
             'message' => trim($messagePart),
-            'rawMessage' => trim($rawPart),
+            'rawMessage' => trim($message),
         ];
     }
 

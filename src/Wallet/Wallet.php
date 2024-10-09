@@ -90,6 +90,19 @@ class Wallet implements WalletInterface
     }
 
     /**
+     * Create a new Transaction instance with the current Wallet and Node connection.
+     *
+     * @return Transaction A new Transaction instance with Wallet and Node connection.
+     */
+    public function transaction(): Transaction
+    {
+        $transaction = new Transaction();
+        $transaction->setWallet($this);
+        $transaction->setNode($this->node);
+        return $transaction;
+    }
+
+    /**
      * Create a USDT token instance.
      *
      * @param string|null $contractAddress Optional contract address for USDT.
@@ -105,16 +118,6 @@ class Wallet implements WalletInterface
         $usdt = new USDT($network, $contractAddress, $abi);
         $usdt->setWallet($this);
         return $usdt;
-    }
-
-    /**
-     * Initialize a new transaction.
-     *
-     * @return Transaction A new Transaction instance.
-     */
-    public function newTransaction(): Transaction
-    {
-        return new Transaction($this);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace ManojX\TronBundle;
 
 use ManojX\TronBundle\Exception\TronException;
 use ManojX\TronBundle\Node\NodeInterface;
+use ManojX\TronBundle\Wallet\Transaction\Transaction;
 use ManojX\TronBundle\Wallet\Wallet;
 
 interface TronInterface
@@ -40,6 +41,17 @@ interface TronInterface
      * @return Wallet A new Wallet instance associated with the current network.
      */
     public function getWallet(?string $privateKey = null): Wallet;
+
+
+    /**
+     * Create a new Transaction instance with the current Node connection.
+     *
+     * This method initializes a new Transaction object and sets its node
+     * property to allow interaction with the blockchain.
+     *
+     * @return Transaction A new Transaction instance with Node connection.
+     */
+    public function transaction(): Transaction;
 
     /**
      * Send a raw transaction to the blockchain.
