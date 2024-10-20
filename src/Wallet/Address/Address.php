@@ -43,7 +43,7 @@ class Address implements AddressInterface
      * @return Address A new Address instance.
      * @throws TronAddressException If address creation fails.
      */
-    public function create(): Address
+    public static function create(): Address
     {
         $ec = new EC('secp256k1');
         $keyPair = $ec->genKeyPair();

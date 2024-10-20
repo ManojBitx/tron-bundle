@@ -3,6 +3,7 @@
 namespace ManojX\Examples;
 
 use ManojX\TronBundle\TronInterface;
+use ManojX\TronBundle\Wallet\Address\Address;
 
 class Wallet
 {
@@ -18,7 +19,7 @@ class Wallet
 
         $wallet = $this->tron->getWallet();
 
-        $address = $wallet->createNewAddress();
+        $address = Address::create();
 
         echo '<pre>';
         echo '<b/>Address:</b> ' . $address->getAddress() . '<br/>';

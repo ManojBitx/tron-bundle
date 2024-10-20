@@ -6,7 +6,7 @@ use ManojX\TronBundle\Exception\TronAddressException;
 
 interface AddressInterface
 {
-    public function create(): Address;
+    public static function create(): Address;
 
     public function getAddress(): string;
 
