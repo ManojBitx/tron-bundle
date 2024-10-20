@@ -6,6 +6,8 @@ use ManojX\TronBundle\Exception\TronAddressException;
 
 interface AddressInterface
 {
+    public function create(): Address;
+
     public function getAddress(): string;
 
     public function getAddressHex(): string;

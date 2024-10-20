@@ -2,6 +2,7 @@
 
 namespace ManojX\TronBundle\Wallet\Address;
 
+use Elliptic\EC;
 use kornrunner\Keccak;
 use ManojX\TronBundle\Exception\TronAddressException;
 use ManojX\TronBundle\Lib\Base58;
@@ -34,6 +35,35 @@ class Address implements AddressInterface
 
         $this->addressHex = self::publicKeyToHex($this->publicKey);
         $this->address = self::hexToBase58($this->addressHex);
+    }
+
+    /**
+     * Create a new wallet address.
+     *
+     * @return Address A new Address instance.
+     * @throws TronAddressException If address creation fails.
+     */
+    public function create(): Address
+    {
+        $ec = new EC('secp256k1');
+        $keyPair = $ec->genKeyPair();
+        $privateKey = $keyPair->getPrivate('hex');
+        $publicKey = $keyPair->getPublic('hex');
+
+        return new Address([
+            'public_key' => $publicKey,
+            'private_key' => $privateKey,
+        ]);
+    }
+
+    public function getRaw(): array
+    {
+        return [
+            'address' => $this->address,
+            'addressHex' => $this->addressHex,
+            'publicKey' => $this->publicKey,
+            'privateKey' => $this->privateKey,
+        ];
     }
 
     /**

@@ -150,24 +150,6 @@ class Wallet implements WalletInterface
     }
 
     /**
-     * Create a new wallet address.
-     *
-     * @return Address A new Address instance.
-     * @throws TronAddressException If address creation fails.
-     */
-    public function createNewAddress(): Address
-    {
-        $keyPair = $this->ec->genKeyPair();
-        $privateKey = $keyPair->getPrivate('hex');
-        $publicKey = $keyPair->getPublic('hex');
-
-        return new Address([
-            'public_key' => $publicKey,
-            'private_key' => $privateKey,
-        ]);
-    }
-
-    /**
      * Update the permissions of the wallet owner address.
      *
      * @param string $authorizedAddress The address to be authorized.

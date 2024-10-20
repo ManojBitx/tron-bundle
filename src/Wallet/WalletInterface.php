@@ -71,15 +71,6 @@ interface WalletInterface
     public function signTransaction(array $transaction): array;
 
     /**
-     * Creates a new wallet address.
-     *
-     * @return Address The newly created Address instance.
-     *
-     * @throws TronAddressException If the address creation fails.
-     */
-    public function createNewAddress(): Address;
-
-    /**
      * Updates the permissions for an authorized address on the wallet.
      *
      * @param string $authorizedAddress The address being authorized for specific operations.
