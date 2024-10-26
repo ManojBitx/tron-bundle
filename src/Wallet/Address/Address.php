@@ -27,17 +27,36 @@ class Address implements AddressInterface
 
     /**
      * @throws TronAddressException
+     * @param array $data {
+     *     @type string $public_key Optional. The public key in hex format
+     *     @type string $private_key Optional. The private key in hex format
+     *     @type string $address_hex Optional. The address in hex format
+     *     @type string $address Optional. The base58 encoded address
+     * }
      */
     public function __construct(array $data)
     {
         if (isset($data['public_key']) && isset($data['private_key'])) {
+            if (!ctype_xdigit($data['public_key']) || !ctype_xdigit($data['private_key'])) {
+                throw new TronAddressException('Invalid key format. Expected hexadecimal.');
+            }
             $this->publicKey = $data['public_key'];
             $this->privateKey = $data['private_key'];
             $this->addressHex = self::publicKeyToHex($this->publicKey);
             $this->address = self::hexToBase58($this->addressHex);
         } else {
-            $this->addressHex = $data['address_hex'] ?? null;
-            $this->address = $data['address'] ?? null;
+            $addressHex = $data['address_hex'] ?? null;
+            $address = $data['address'] ?? null;
+
+            if ($addressHex !== null && !ctype_xdigit($addressHex)) {
+                throw new TronAddressException('Invalid address_hex format. Expected hexadecimal.');
+            }
+            if ($address !== null && !self::isValid($address)) {
+                throw new TronAddressException('Invalid address format.');
+            }
+
+            $this->addressHex = $addressHex;
+            $this->address = $address;
         }
     }
 
@@ -73,7 +92,7 @@ class Address implements AddressInterface
     /**
      * @return string
      */
-    public function getAddress(): string
+    public function getAddress(): ?string
     {
         return $this->address;
     }
@@ -81,7 +100,7 @@ class Address implements AddressInterface
     /**
      * @return string
      */
-    public function getAddressHex(): string
+    public function getAddressHex(): ?string
     {
         return $this->addressHex;
     }
@@ -89,7 +108,7 @@ class Address implements AddressInterface
     /**
      * @return string
      */
-    public function getPublicKey(): string
+    public function getPublicKey(): ?string
     {
         return $this->publicKey;
     }
@@ -97,7 +116,7 @@ class Address implements AddressInterface
     /**
      * @return string
      */
-    public function getPrivateKey(): string
+    public function getPrivateKey(): ?string
     {
         return $this->privateKey;
     }
