@@ -141,4 +141,16 @@ class Node extends Base implements NodeInterface
         }
         return $this->parse($response);
     }
+
+    public function getAccount(string $address): array
+    {
+        $response = $this->provider->request('/wallet/getaccount', [
+            "address" => $address,
+            "visible" => true
+        ], 'POST');
+        if (count($response) <= 0) {
+            $response['Error'] = 'Invalid.Address: Transaction not found or Invalid transaction hash.';
+        }
+        return $this->parse($response);
+    }
 }

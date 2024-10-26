@@ -13,26 +13,28 @@ use ManojX\TronBundle\Wallet\Transaction\Transaction;
 
 class Wallet implements WalletInterface
 {
+    use WalletTrait;
 
     private EC $ec;
 
     private ?NodeInterface $node = null;
 
-    private Address $account;
+    private ?Address $account = null;
 
     /**
      * @throws TronAddressException
      */
-    public function __construct(string $privateKey, ?NodeInterface $node = null)
+    public function __construct(?string $privateKey = null, ?NodeInterface $node = null)
     {
         $this->ec = new EC('secp256k1');
 
-        $publicKey = $this->ec->keyFromPrivate($privateKey)->getPublic('hex');
-        $this->account = new Address([
-            'public_key' => $publicKey,
-            'private_key' => $privateKey,
-        ]);
-
+        if ($privateKey) {
+            $publicKey = $this->ec->keyFromPrivate($privateKey)->getPublic('hex');
+            $this->account = new Address([
+                'public_key' => $publicKey,
+                'private_key' => $privateKey,
+            ]);
+        }
         $this->node = $node;
     }
 
@@ -61,6 +63,12 @@ class Wallet implements WalletInterface
         return $this->account->getAddress();
     }
 
+    public function setAccount(Address $account): self
+    {
+        $this->account = $account;
+        return $this;
+    }
+
     /**
      * Get the node instance used for blockchain interactions.
      *
@@ -73,6 +81,31 @@ class Wallet implements WalletInterface
             throw new TronAddressException('Please provide a node to get the node.');
         }
         return $this->node;
+    }
+
+    /**
+     * Get the native balance of the wallet.
+     *
+     * @param string|null $address
+     * @return array
+     *
+     * @throws TronAddressException
+     */
+    public function getNativeBalance(?string $address = null): array
+    {
+        if ($address) {
+            $this->account = new Address(['address' => $address]);
+        }
+        $node = $this->getNode();
+        $response = $node->getAccount($this->getAddress());
+        if ($response['success']) {
+            return [
+                'success' => true,
+                'data' => $this->formatNativeBalance($response['data']),
+            ];
+        }
+
+        throw new TronAddressException('Failed to get balance due to: ' . $response['message']);
     }
 
     /**

@@ -17,24 +17,28 @@ class Address implements AddressInterface
 
     const ADDRESS_PREFIX_BYTE = 0x41;
 
-    private string $address;
+    private ?string $address;
 
-    private string $addressHex;
+    private ?string $addressHex;
 
-    private string $publicKey;
+    private ?string $publicKey = null;
 
-    private string $privateKey;
+    private ?string $privateKey = null;
 
     /**
      * @throws TronAddressException
      */
     public function __construct(array $data)
     {
-        $this->publicKey = $data['public_key'];
-        $this->privateKey = $data['private_key'];
-
-        $this->addressHex = self::publicKeyToHex($this->publicKey);
-        $this->address = self::hexToBase58($this->addressHex);
+        if (isset($data['public_key']) && isset($data['private_key'])) {
+            $this->publicKey = $data['public_key'];
+            $this->privateKey = $data['private_key'];
+            $this->addressHex = self::publicKeyToHex($this->publicKey);
+            $this->address = self::hexToBase58($this->addressHex);
+        } else {
+            $this->addressHex = $data['address_hex'] ?? null;
+            $this->address = $data['address'] ?? null;
+        }
     }
 
     /**
