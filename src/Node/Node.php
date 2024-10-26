@@ -149,7 +149,7 @@ class Node extends Base implements NodeInterface
             "visible" => true
         ], 'POST');
         if (count($response) <= 0) {
-            $response['Error'] = 'Invalid.Address: Transaction not found or Invalid transaction hash.';
+            $response['Error'] = 'Invalid.Address: Address not found or invalid address.';
         }
         return $this->parse($response);
     }
