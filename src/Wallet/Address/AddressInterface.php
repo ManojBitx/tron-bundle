@@ -8,13 +8,13 @@ interface AddressInterface
 {
     public static function create(): Address;
 
-    public function getAddress(): string;
+    public function getAddress(): ?string;
 
-    public function getAddressHex(): string;
+    public function getAddressHex(): ?string;
 
-    public function getPublicKey(): string;
+    public function getPublicKey(): ?string;
 
-    public function getPrivateKey(): string;
+    public function getPrivateKey(): ?string;
 
     /**
      * @throws TronAddressException

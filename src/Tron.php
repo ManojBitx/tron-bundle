@@ -86,7 +86,7 @@ class Tron implements TronInterface
      * @return Wallet A new Wallet instance.
      * @throws TronAddressException If there is an issue with the wallet address.
      */
-    public function getWallet(string $privateKey = null): Wallet
+    public function getWallet(?string $privateKey = null): Wallet
     {
         return new Wallet($privateKey, $this->node);
     }

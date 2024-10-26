@@ -75,4 +75,11 @@ interface NodeInterface
      */
     public function getTransactionById(string $txID): array;
 
+    /**
+     * Retrieve the account details for the given address.
+     *
+     * @param string $address
+     * @return array
+     */
+    public function getAccount(string $address): array;
 }

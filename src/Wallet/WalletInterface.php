@@ -18,6 +18,14 @@ interface WalletInterface
     public function getAccount(): Address;
 
     /**
+     * Sets the wallet's account details.
+     *
+     * @param Address $account The account details to set.
+     * @return Wallet
+     */
+    public function setAccount(Address $account): WalletInterface;
+
+    /**
      * Retrieves the wallet's address in either base58 or hexadecimal format.
      *
      * @param bool $hex If true, returns the address in hexadecimal format. Otherwise, returns in base58 format.
