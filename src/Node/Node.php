@@ -58,6 +58,16 @@ class Node extends Base implements NodeInterface
         return $this->provider->request('/wallet/getnowblock');
     }
 
+    public function createAccount(string $ownerAddress, string $address, bool $isBase58Address = true): array
+    {
+        $response = $this->provider->request('/wallet/createaccount', [
+            "owner_address" => $ownerAddress,
+            "account_address" => $address,
+            "visible" => $isBase58Address,
+        ], 'POST');
+        return $this->parse($response);
+    }
+
     public function broadcastTransaction(array $signedTransaction): array
     {
         $response = $this->provider->request('/wallet/broadcasttransaction', $signedTransaction, 'POST');

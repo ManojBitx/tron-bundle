@@ -11,6 +11,19 @@ interface NodeInterface
      */
     public function getCurrentBlock(): array;
 
+
+    /**
+     * This method implements https://developers.tron.network/reference/account-createaccount
+     * Activate a new account on the blockchain.
+     *
+     * @param string $ownerAddress
+     * @param string $address
+     * @param bool $isBase58Address
+     *
+     * @return array An array Transaction.
+     */
+    public function createAccount(string $ownerAddress, string $address, bool $isBase58Address = true): array;
+
     /**
      * Broadcast a signed transaction to the network.
      *
