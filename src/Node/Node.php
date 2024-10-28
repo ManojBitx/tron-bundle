@@ -65,6 +65,9 @@ class Node extends Base implements NodeInterface
             "account_address" => $address,
             "visible" => $isBase58Address,
         ], 'POST');
+        if (empty($response)) {
+            $response['Error'] = 'Failed to create account. Please verify the addresses and try again.';
+        }
         return $this->parse($response);
     }
 
