@@ -105,7 +105,7 @@ class Wallet implements WalletInterface
             ];
         }
 
-        throw new TronAddressException('Failed to get balance due to: ' . $response['message']);
+        throw new TronAddressException('Failed to get balance due to: ' . $response['error']['rawMessage']);
     }
 
     /**
