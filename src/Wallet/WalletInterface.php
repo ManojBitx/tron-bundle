@@ -42,6 +42,21 @@ interface WalletInterface
     public function getNode(): NodeInterface;
 
     /**
+     * Creates a new wallet account and activates it.
+     *
+     * @return array
+     */
+    public function createNewAccount(): array;
+
+    /**
+     * Activates the wallet account.
+     *
+     * @param Address $address
+     * @return array
+     */
+    public function activateAccount(Address $address): array;
+
+    /**
      * Retrieves a TRC20 contract instance for interacting with a specific contract address.
      *
      * @param string $contractAddress The contract address of the TRC20 token.

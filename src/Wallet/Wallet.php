@@ -84,6 +84,76 @@ class Wallet implements WalletInterface
     }
 
     /**
+     * Create a new account and activate it.
+     *
+     * @return array
+     *
+     * @throws TronException
+     */
+    public function createNewAccount(): array
+    {
+        if (!$this->account) {
+            throw new TronException('Account not set');
+        }
+
+        try {
+            $newAccount = Address::create();
+            $data = $this->activateAccount($newAccount);
+            if ($data['success']) {
+                return [
+                    'success' => true,
+                    'data' => $newAccount,
+                ];
+            }
+            throw new TronException('Failed [createNewAccount]: ' . $data['error']['rawMessage']);
+        } catch (\Exception $e) {
+            throw new TronException('Failed [createNewAccount]: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Activate an account.
+     *
+     * @param Address $address
+     * @return array
+     *
+     * @throws TronException
+     */
+    public function activateAccount(Address $address): array
+    {
+        if (!$this->account) {
+            throw new TronException('Account not set');
+        }
+
+        $node = $this->getNode();
+        $response = $node->createAccount($this->account->getAddress(), $address->getAddress());
+        if ($response['success']) {
+            $signedTransaction = $this->signTransaction($response['data']);
+            $broadcastResponse = $node->broadcastTransaction($signedTransaction);
+            if ($broadcastResponse['success']) {
+                return [
+                    'success' => true,
+                    'data' => $broadcastResponse['data'],
+                ];
+            }
+            throw new TronException('Failed [activateAccount]: ' . $broadcastResponse['error']['rawMessage']);
+        }
+
+        if (strpos($response['error']['rawMessage'], 'Account has existed') !== false) {
+            return [
+                'success' => true,
+                'message' => 'Account already exists',
+                'data' => [
+                    'ownerAddress' => $this->account->getAddress(),
+                    'address' => $address->getAddress(),
+                ],
+            ];
+        }
+
+        throw new TronException('Failed [activateAccount]: ' . $response['error']['rawMessage']);
+    }
+
+    /**
      * Get the native balance of the wallet.
      *
      * @param string|null $address
